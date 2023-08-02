@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Source.cpp(34,8): warning C4018: '>': signed/unsigned mismatch
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Source.cpp(127): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &operator <<<char,std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const center_helper<char,std::char_traits<char>> &)' being compiled
+  Fast Food Ordering Application.vcxproj -> C:\Users\quint\source\repos\Fast Food Ordering Application\x64\Debug\Fast Food Ordering Application.exe
