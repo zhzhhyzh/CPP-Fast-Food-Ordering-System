@@ -1,0 +1,5 @@
+                  Customer Name                          Card Number            Contact Number          Membership Point               Value          
+               quinton pang yi xuan                       ABC000001               0193903300                    0                    205.000000        
+                     quinton                              ABC000002                 0139210                     0                    24.000000        
+                                           quinton                     pang                       yi                     xuan                 0.000000
+                                           quinton                     pang                       yi                     xuan                 0.000000
