@@ -136,7 +136,7 @@ int main() {
 		//cout << "3. Redeem Gift Using Membership Point\n";
 		cout << "3. Top Up Membership Card\n";
 
-		cout << "0. Quit Program\n";
+		cout << "\n0. Quit Program\n";
 		cout << "\nPlease enter: ";
 
 		cin >> menuChoice;

@@ -418,7 +418,7 @@ void cardTopUp(string passedInCardNo)
 			if (line.find(cardNo, 0) != string::npos) {
 				deleteLine = line;
 				//	cout << "FOUND";
-				cout << "\nMember found\n";
+				if(passedInCardNo.length() <= 0)cout << "\nMember found\n";
 				flagToProceed = true;
 				//cout << "FOUNDDD";
 				break;
