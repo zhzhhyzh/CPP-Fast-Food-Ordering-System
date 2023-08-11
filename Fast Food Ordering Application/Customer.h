@@ -20,6 +20,7 @@ public:
 			noOfLines = 0;
 		}
 		else {
+			noOfLines--;
 			while (std::getline(InputMemberFile, line))
 				++noOfLines;
 		//	std::cout << "Number of lines in text file: " << noOfLines;
@@ -56,6 +57,8 @@ private:
 
 Customer registerCustomer();
 void writeMemberToFile(Customer customer);
-void cardTopUp();
+void cardTopUp(string passedInCardNo="");
 double getCurrentTopUpValueFromFile(string cardNo) ;
 int getCurrentPointFromFile(string cardNo);
+void updatePoint(string cardNo, int newPoint);
+void updateValue(string cardNo, double newValue);

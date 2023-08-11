@@ -4,7 +4,10 @@
 #include <fstream>
 #include <algorithm>
 #include <iomanip>
+#include <cmath>
 #include <iostream>
+#include <stdlib.h>
+
 #define COLUMN_WIDTH 25
 
 using namespace std;
@@ -43,82 +46,308 @@ std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>&
 	return s;
 }
 
+double displayOrders(vector<Food>foods, vector<int>orders, int type) {
+	double total = 0;
+	cout << setw(10) <<centered2("ID")<<setw(50) << centered2("NAME") << setw(35) << centered2("QUANTITY") << setw(35) << centered2("SUBTOTAL") << endl;
+
+	for (auto it = foods.begin(); it != foods.end(); ++it) {
+
+		auto i = std::distance(foods.begin(), it);
+		int count = std::count(orders.begin(), orders.end(), (*it).getId());
+		if (count > 0) {
+			total += count * (*it).getPrice();
+			ostringstream str1;
+			str1 << round(count * (*it).getPrice() * 100) / 100;
+			// Sending a number as a stream into output
+			// string
+			str1 << round(total * 0.1 * 100) / 100;
+			cout << setw(10) << centered2(to_string(int((*it).getId())))<<setw(50) << centered2((*it).getName()) << setw(35) << centered2(to_string(count)) << setw(35)<<centered2(str1.str()) << endl;;
+		}
+	}
+
+
+	// 1 is take away, 2 is dine in
+	if (type == 1) {
+		total += 2;
+		cout << "\nPACKAGING FEE: RM2" << endl;
+	}
+	else if (type == 2) {
+		ostringstream str1;
+
+		// Sending a number as a stream into output
+		// string
+		str1 << round(total * 0.1 * 100) / 100;
+		cout << "\nSERVICE CHARGE (10%): "<< str1.str() << endl;
+		total *= 1.1;
+		}
+	ostringstream str1;
+
+	// Sending a number as a stream into output
+	// string
+	str1 << round(total * 100) / 100;
+
+	cout << "TOTAL: RM" << str1.str() << endl;
+
+	return total;
+}
+void pushBack(string& str1, string str2)
+{
+	// Appends character by character str2
+	// at the end of str1
+	for (int i = 0; str2[i] != '\0'; i++)
+	{
+		str1.push_back(str2[i]);
+	}
+	//cout << "After push_back : ";
+	//cout << str1;
+}
+
+void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
+
+	// cout << setw(50) << centered2("NAME") << setw(10) << centered2("QUANTITY") << setw(10) << centered2("SUBTOTAL") << endl;
+	double total = displayOrders(foods, orders, orderChoice);
+
+	//cout << "TOTAL: " << total<<endl;
+	cout << "Please enter your card number to proceed: ";
+
+	string cardNo;
+	cin >> cardNo;
+	while (cardNo.length() != 9) {
+		cout << "Invalid format! ";
+		cout << "Please enter your card number again: ";;
+		cin >> cardNo;
+	}
+
+	bool flagToProceed = false;
+	double currentValue = 0;
+	int currentPoint = 0;
+	string deleteLine;
+
+	while (!flagToProceed) {
+		ifstream fileInput;
+		fileInput.open("member.txt");
+		string line;
+		unsigned int curLine = 0;
+		while (getline(fileInput, line)) {
+			if (line.find(cardNo, 0) != string::npos) {
+				deleteLine = line;
+				//	cout << "FOUND";
+				cout << "Member found\n";
+				flagToProceed = true;
+				break;
+			}
+			else {
+
+
+			}
+
+
+
+		}
+		if (flagToProceed) break;
+		cout << "NOT FOUND!\n";
+		cout << "Please enter your card number again: ";
+		fileInput.close();
+		//string cardNo;
+		cin >> cardNo;
+	}
+
+
+	int selection;
+	int pointsNeeded = ceil(total * 100); // Points required for the purchase
+
+
+
+
+	bool goOnFlag = false;
+	while (!goOnFlag) {
+		cout << "\nEnter your selection" << endl;
+		cout << "1) Use sufficient balance to pay" << endl;
+		cout << "2) Use redeem point to pay" << endl;
+		cin >> selection;
+		if (!cin || selection != 1 && selection != 2) {
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input. Please enter 1 or 2." << endl;
+		}
+		else {
+			if (selection == 1) {
+				currentValue = getCurrentTopUpValueFromFile(cardNo);
+				if (currentValue < total) {
+					cout << "Not enough balance!\n";
+
+					string wantTopUp;
+
+					cout << "Do you want to top up now? (Y/N): ";
+					cin >> wantTopUp;
+					while (wantTopUp != "Y" && wantTopUp != "y" && wantTopUp != "N" && wantTopUp != "n") {
+						cout << "Do you want to top up now? (Y/N): ";
+
+					}
+
+					if (wantTopUp == "Y" || wantTopUp == "y") {
+						cout << "Proceeding to top up page\n";
+
+						cardTopUp(cardNo);
+					}
+
+					//	continue;
+
+				}
+				else {
+					goOnFlag = true;
+					break;
+				}
+			}
+			else if (selection == 2) {
+				currentPoint = getCurrentPointFromFile(cardNo);
+				if (currentPoint < pointsNeeded) {
+					cout << "Not enough points!\n";
+					//	continue;
+
+				}
+				else {
+					goOnFlag = true;
+
+					break;
+				}
+			}
+		}
+	}
+
+
+
+	// use value to purchase
+	if (selection == 1) {
+	
+		double value = currentValue - total;
+
+		updateValue(cardNo, value);
+	}
+	// use membership point to purchase
+	else if (selection == 2) {
+		double newPoint = currentPoint - pointsNeeded;
+		updatePoint(cardNo, newPoint);
+	}
+	system("CLS");
+	double valueBalance = getCurrentTopUpValueFromFile(cardNo);
+	int pointBalance = getCurrentPointFromFile(cardNo);
+	cout << "---------------------------------------" << endl;
+	cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << valueBalance << "|" << endl;
+	cout << "---------------------------------------" << endl;
+	cout << "|Point   : " << setw(26) << left << pointBalance << "|" << endl;
+	cout << "---------------------------------------" << endl;
+	cout << "\nPayment is successful! Enjoy your meal!\n";
+
+
+}
+
+
+
+
 void foodSelection() {
 
 	vector<Food> set_foods;
 	set_foods.push_back(Food("Big Breakfast : Ham + Sausage + Fried Egg + Toast", 12.00, 1));
-	set_foods.push_back(Food("McChicken Set: Cola + Chicken Burger + French Fries", 15.00, 2));
+	set_foods.push_back(Food("McChicken Set: Cola + Chicken Burger + Brownies", 15.50, 2));
 	set_foods.push_back(Food("McFillet Set: Cola + Fish Burger + French Fries", 21.50, 3));
 
 	vector<Food> ala_carte_foods;
-	ala_carte_foods.push_back(Food("Big Breakfast : Ham + Sausage + Fried Egg + Toast", 12.00, 4));
-	ala_carte_foods.push_back(Food("McChicken Set: Cola + Chicken Burger + French Fries", 15.00, 5));
-	ala_carte_foods.push_back(Food("McFillet Set: Cola + Fish Burger + French Fries", 21.50, 6));
+	ala_carte_foods.push_back(Food("Chicken Burger", 10.90, 4));
+	ala_carte_foods.push_back(Food("French Fries", 10.00, 5));
+	ala_carte_foods.push_back(Food("Ice Lemon Tea",4.00, 6));
 
+	// all foods grouped together
+	vector<Food>foods;
+	foods.reserve(set_foods.size() + ala_carte_foods.size()); // preallocate memory
+	foods.insert(foods.end(), set_foods.begin(), set_foods.end());
+	foods.insert(foods.end(), ala_carte_foods.begin(), ala_carte_foods.end());
 	vector<int> orders;
 	bool flag = true;
 	bool isCheckout = true;
 
-	while (flag) {
 		int orderChoice, setAlaCarteChoice;
+	while (flag) {
+		cout << "ORDER FOOD\n\n";
+
 		cout << "Previous Page (0) Take Away (1) Dine In (2)\n";
+		cout << "\nPlease enter: ";
 		cin >> orderChoice;
 		while (!cin || orderChoice < 0 || orderChoice>2) {
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "Invalid choice\n";
+			cout << "Invalid choice. Please enter again: ";
 			cin >> orderChoice;
 		}
 
 		if (orderChoice == 0) {
 			isCheckout = false;
+			system("CLS");
 			break;
 		}
 
-		bool orderFlag = true;
+		order: bool orderFlag = true;
 		while (orderFlag) {
+			system("CLS");
 			switch (orderChoice) {
 			case 1:
-				cout << "TAKE AWAY:\n";
+				cout << "ORDER FOOD (TAKE AWAY)\n\n";
 				break;
 			case 2:
-				cout << "DINE IN:\n";
+				cout << "ORDER FOOD (DINE IN):\n\n";
 				break;
 			}
 			cout << "Return to previous page (0) Set (1) Ala Carte (2) Show Orders (3) Delete An Order (4) Proceed To Checkout (5) \n";
+			cout << "\nPlease enter: ";
 			cin >> setAlaCarteChoice;
 			while (!cin || setAlaCarteChoice < 0 || setAlaCarteChoice>5) {
 				cin.clear();
 				cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				cout << "Invalid choice\n";
+				cout << "Invalid choice. Please enter again: ";
 				cin >> setAlaCarteChoice;
 			}
+
 			if (setAlaCarteChoice == 1) {
 
 
-				cout << "0. Return to previous page\n";
+				system("CLS");
+
+
+
+				cout << "0. Return to previous page\n\n";
+				cout << setw(10) << centered2("ID") << setw(50) << centered2("NAME") << setw(35) << centered2("PRICE (RM)") << endl;
+
 				for (auto it = set_foods.begin(); it != set_foods.end(); ++it) {
 
 					auto i = std::distance(set_foods.begin(), it);
-					cout << (*it).getId() << ". " << (*it).getName() << "\n";
+					// declaring output string stream
+					ostringstream str1;
+
+					// Sending a number as a stream into output
+					// string
+					str1 << round((*it).getPrice() * 100) / 100;
+					cout << setw(10) << centered2(to_string(int((*it).getId()))) << setw(50) << centered2((*it).getName()) << setw(35) << centered2(str1.str()) << endl;
+
 				}
 
-				cout << "Please Select Your Choice (number): ";
+				cout << "\nPlease Select Your Choice (number): ";
 				int choice, quantity;
 				cin >> choice;
-				if (choice == 0) continue;
 				while (!cin || choice < 0 || choice>set_foods.size()) {
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice\n";
+					cout << "Invalid choice. Please enter again: ";
 					cin >> choice;
 				}
+				if (choice == 0) continue;
+
 				cout << "Please Enter Your Quantity: ";
 				cin >> quantity;
 				while (!cin) {
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice\n";
+					cout << "Invalid choice. Please enter again: ";
+
 					cin >> quantity;
 				}
 				for (int i = 0; i < quantity; i++) {
@@ -135,31 +364,42 @@ void foodSelection() {
 
 			}
 			else if (setAlaCarteChoice == 2) {
-				cout << "0. Return to previous page\n";
+				system("CLS");
+
+				cout << "0. Return to previous page\n\n";
+				cout << setw(10) << centered2("ID") << setw(50) << centered2("NAME") << setw(35) << centered2("PRICE (RM)") << endl;
 
 				for (auto it = ala_carte_foods.begin(); it != ala_carte_foods.end(); ++it) {
 
 					auto i = std::distance(ala_carte_foods.begin(), it);
-					cout << (*it).getId() << ". " << (*it).getName() << "\n";
-				}
+					ostringstream str1;
 
-				cout << "Please Select Your Choice (number): ";
+					// Sending a number as a stream into output
+					// string
+					str1 << round((*it).getPrice() * 100) / 100;
+					cout << setw(10) << centered2(to_string(int((*it).getId()))) << setw(50) << centered2((*it).getName()) << setw(35) << centered2(str1.str()) << endl;
+
+				}
+		
+
+				cout << "\nPlease Select Your Choice (number): ";
 				int choice, quantity;
 				cin >> choice;
-				if (choice == 0) continue;
 
 				while (!cin || (choice != 0 && (choice <= set_foods.size() || choice > set_foods.size() + ala_carte_foods.size()))) {
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice\n";
+					cout << "Invalid choice. Please enter again: ";
 					cin >> choice;
 				}
+				if (choice == 0) continue;
+
 				cout << "Please Enter Your Quantity: ";
 				cin >> quantity;
 				while (!cin) {
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice\n";
+					cout << "Invalid choice. Please enter again: ";
 					cin >> quantity;
 				}
 				for (int i = 0; i < quantity; i++) {
@@ -175,48 +415,74 @@ void foodSelection() {
 
 			}
 			else if (setAlaCarteChoice == 4) {
-				cout << "0. Return to previous page\n";
-				for (auto it = orders.begin(); it != orders.end(); ++it) {
+			system("CLS");
 
-					auto i = std::distance(orders.begin(), it);
-					if ((*it) > set_foods.size()) {
-						cout << i + 1 << ". " << ala_carte_foods.at((*it) - set_foods.size() - 1).getName() << "\n";
+				while (true) {
+					cout << "0. Return to previous page\n\n";
+					displayOrders(foods, orders, orderChoice);
+					int choiceToDelete, quantityToDelete;
+					cout << "\nEnter the ID of the food to be deleted: ";
+					cin >> choiceToDelete;
+					
+					while (!cin ||( choiceToDelete!=0 && std::find(orders.begin(), orders.end(), choiceToDelete)==orders.end())) {
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+						cout << "Invalid choice\n";
+						cout << "Enter the number of the order to be deleted: ";
+						cin >> choiceToDelete;
 
 					}
-					else {
-						cout << i + 1 << ". " << set_foods.at((*it)).getName() << "\n";
+					if (choiceToDelete == 0) break;
 
+					int count = std::count(orders.begin(), orders.end(), choiceToDelete);
+
+					cout << "Enter the quantity of the order to be deleted: ";
+					cin >> quantityToDelete;
+					while (!cin || quantityToDelete<0 || quantityToDelete>count) {
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+						cout << "Invalid choice\n";
+						cout << "Enter the quantity of the order to be deleted: ";
+						cin >> quantityToDelete;
 					}
-				}
-				int choiceToDelete;
-				cout << "Enter the number of the order to be deleted: ";
-				cin >> choiceToDelete;
-				if (choiceToDelete == 0) continue;
-				while (!cin || choiceToDelete<0 || choiceToDelete>orders.size()) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice\n";
-					cin >> setAlaCarteChoice;
+
+					for (int i = 0; i < quantityToDelete; i++) {
+						// Get the iterator to the first occurrence of given value in vector
+						auto it = std::find(orders.begin(), orders.end(), choiceToDelete);
+						// Remove the element pointed by the iterator
+						if (it != orders.end())
+						{
+							orders.erase(it);
+						}
+					
+					}
+
+
+					
+					system("CLS");
+
+
+					//orders.erase(orders.begin() + choiceToDelete - 1);
 				}
 
-				orders.erase(orders.begin() + choiceToDelete - 1);
+				continue;
+				
 			}
 			else if (setAlaCarteChoice == 3) {
-				for (auto it = orders.begin(); it != orders.end(); ++it) {
+			system("CLS");
 
-					auto i = std::distance(orders.begin(), it);
-					if ((*it) > set_foods.size()) {
-						cout << i + 1 << ". " << ala_carte_foods.at((*it) - set_foods.size() - 1).getName() << "\n";
+			displayOrders(foods, orders, orderChoice);
+			// cout << "Press ANY KEY to continue... ";
+			cout << endl;
+			// on windows
+			system("pause");
 
-					}
-					else {
-						cout << i + 1 << ". " << set_foods.at((*it)).getName() << "\n";
-
-					}
-				}
+			// on linux or mac
+			system("read");
 
 			}
 			else if (setAlaCarteChoice == 5) {
+			system("CLS");
 
 				orderFlag = false;
 				flag = false;
@@ -224,262 +490,45 @@ void foodSelection() {
 			}
 			else if (setAlaCarteChoice == 0) {
 				string choice;
-				cout << "Are you sure to cancel your order and return to previous page? (Y)";
+				cout << "Are you sure to cancel your order and return to previous page? (Y/other keys): ";
 				cin >> choice;
-				if (choice == "Y" || choice == "y")orderFlag = false;
+				if (choice == "Y" || choice == "y") {
+					orderFlag = false;
+					isCheckout = false;
+				}
+				system("CLS");
+
 			}
 		}
 
 	}
 
 	if (isCheckout) {
-		cout << "Proceeding to checkout";
-		vector<Food>foods;
-		foods.reserve(set_foods.size() + ala_carte_foods.size()); // preallocate memory
-		foods.insert(foods.end(), set_foods.begin(), set_foods.end());
-		foods.insert(foods.end(), ala_carte_foods.begin(), ala_carte_foods.end());
-		payment(foods, orders);
+
+		string yesOrNo;
+		displayOrders(foods, orders, orderChoice);
+		cout << "Proceed to checkout? (Y/N): ";
+		cin >> yesOrNo;
+		while (yesOrNo != "Y" && yesOrNo !="y" && yesOrNo !="N" && yesOrNo != "n") {
+			cout << "Proceed to checkout? (Y/N): ";
+			cin >> yesOrNo;
+
+		}
+
+		if (yesOrNo == "Y" || yesOrNo == "y") {
+			system("CLS");
+
+			cout << "Proceeding to checkout\n";
+
+			payment(foods, orders, orderChoice);
+		}
+		else {
+			goto order;
+		}
+		
 	//	return orders;
 	}
 
 
 	
 }
-void pushBack(string &str1, string str2)
-{
-	// Appends character by character str2
-	// at the end of str1
-	for (int i = 0; str2[i] != '\0'; i++)
-	{
-		str1.push_back(str2[i]);
-	}
-	//cout << "After push_back : ";
-	//cout << str1;
-}
-void payment(vector<Food>foods, vector<int>orders) {
-
-	double total = 0;
-	cout << setw(50) << 'NAME' << setw(10) << "QUANTITY" << setw(10)<<"SUBTOTAL"<< endl;
-	for (auto it = foods.begin(); it != foods.end(); ++it) {
-
-		auto i = std::distance(foods.begin(), it);
-		int count = std::count(orders.begin(), orders.end(), (*it).getId());
-		if (count > 0) {
-			total += count * (*it).getPrice();
-			cout << setw(50) << (*it).getName() << setw(10) << count << count * (*it).getPrice() << endl;;
-		}
-	}
-
-	cout << "TOTAL: " << total<<endl;
-	cout << "Please enter your card number to proceed: ";
-
-	string cardNo;
-	cin >> cardNo;
-	while (cardNo.length() != 9) {
-		cout << "Invalid format! ";
-		cout << "Please enter your card number again to proceed: ";;
-		cin >> cardNo;
-	}
-	
-	bool flagToProceed = false;
-	double currentValue = 0;
-	int currentPoint = 0;
-	string deleteLine;
-
-	while (!flagToProceed) {
-		ifstream fileInput;
-		fileInput.open("member.txt");
-		string line;
-		unsigned int curLine = 0;
-		while (getline(fileInput, line)) { 
-			if (line.find(cardNo, 0) != string::npos) {
-				deleteLine = line;
-			//	cout << "FOUND";
-				flagToProceed = true;
-				break;
-			}
-			else {
-				
-
-			}
-
-
-
-		}
-		if (flagToProceed) break;
-		cout << "NOT FOUND";
-		cout << "Please enter your card number to proceed: ";
-		fileInput.close();
-		string cardNo;
-		cin >> cardNo;
-	}
-
-
-	int selection;
-	int pointsNeeded = ceil(total * 100); // Points required for the purchase
-
-
-	
-
-		bool goOnFlag = false;
-		while(!goOnFlag) {
-			cout << "Enter your selection" << endl;
-			cout << "1) Use sufficient balance to pay" << endl;
-			cout << "2) Use redeem point to pay" << endl;
-			cin >> selection;
-			if (selection != 1 && selection != 2) {
-				cout << "Invalid input. Please enter 1 or 2." << endl;
-			}
-			else {
-				if (selection == 1) {
-					currentValue = getCurrentTopUpValueFromFile(cardNo);
-					if (currentValue < total) {
-						cout << "Not enough balance!\n";
-					//	continue;
-
-					}
-					else {
-						goOnFlag = true;
-						break;
-					}
-				}
-				else if (selection == 2) {
-					 currentPoint = getCurrentPointFromFile(cardNo);
-					if (currentPoint < pointsNeeded) {
-						cout << "Not enough points!\n";
-					//	continue;
-
-					}
-					else {
-						goOnFlag = true;
-
-						break;
-					}
-				}
-			}
-		}
-		
-	
-
-	// use value to purchase
-	if (selection == 1) {
-		string line;
-
-		ifstream fin;
-		fin.open("member.txt");
-		// cout << deleteLine;
-		ofstream out_file{ "copy.txt",  std::ios::trunc };
-
-		while (getline(fin, line)) {
-			//cout << "HEREEEE" << line << endl;
-			//cout << line << endl;
-			//cout << cardNo;
-			if (line.find((cardNo), 50) == string::npos) {
-				//line.replace(0, line.length(), "");
-
-				out_file << line << "\n";
-
-			}
-			//else {
-			//	cout << "HEREEEE" << line << endl;
-
-			//	cout << "FOUND\n";
-			//}
-
-
-
-
-		}
-		fin.close();
-		string name, cardNo, contactNo;
-		int point;
-		double value = currentValue - total;
-
-		//cout << "CURRNET VALUE" << currentValue;
-		std::string s = deleteLine;
-		std::stringstream ss(s);
-		std::istream_iterator<std::string> begin(ss);
-		std::istream_iterator<std::string> end;
-		std::vector<std::string> v(begin, end);
-		for (int i = 0; i < v.size() - 4; i++) {
-			pushBack(name,v.at(i));
-		}
-		// std::copy(v.begin(), v.end() - 5, name);
-		out_file << setw(50) << centered2(name) << setw(COLUMN_WIDTH) << centered2(v.at(v.size() - 4)) << setw(COLUMN_WIDTH) <<centered2(v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << centered2(v.at(v.size() - 2)) << setw(COLUMN_WIDTH) << centered2(to_string(value)) << endl;
-		out_file.close();
-		ofstream out_file2{ "member.txt",  std::ios::trunc };
-		string line2;
-		ifstream fin2;
-		fin2.open("copy.txt");
-		while (getline(fin2, line2)) {
-
-			out_file2 << line2 << "\n";
-
-
-		}
-	}
-		// use membership point to purchase
-	else if (selection == 2) {
-		
-		string line;
-
-		ifstream fin;
-		fin.open("member.txt");
-		// cout << deleteLine;
-		ofstream out_file{ "copy.txt",  std::ios::trunc };
-
-		while (getline(fin, line)) {
-			//cout << "HEREEEE" << line << endl;
-			//cout << line << endl;
-			//cout << cardNo;
-			if (line.find((cardNo), 50) == string::npos) {
-				//line.replace(0, line.length(), "");
-
-				out_file << line << "\n";
-
-			}
-			//else {
-			//	cout << "HEREEEE" << line << endl;
-
-			//	cout << "FOUND\n";
-			//}
-
-
-
-
-		}
-		fin.close();
-		string name, cardNo, contactNo;
-		int point;
-		double newPoint = currentPoint - pointsNeeded;
-
-		//cout << "CURRNET VALUE" << currentValue;
-		std::string s = deleteLine;
-		std::stringstream ss(s);
-		std::istream_iterator<std::string> begin(ss);
-		std::istream_iterator<std::string> end;
-		std::vector<std::string> v(begin, end);
-		for (int i = 0; i < v.size() - 4; i++) {
-			pushBack(name, v.at(i));
-		}
-		//std::copy(v.begin(), v.end()-5,name);
-		out_file << setw(50) << centered2(name) << setw(COLUMN_WIDTH) << centered2(v.at(v.size() - 4)) << setw(COLUMN_WIDTH) << centered2(v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << centered2(to_string(newPoint)) << setw(COLUMN_WIDTH) << centered2(v.at(v.size() - 1)) << endl;
-		out_file.close();
-		ofstream out_file2{ "member.txt",  std::ios::trunc };
-		string line2;
-		ifstream fin2;
-		fin2.open("copy.txt");
-		while (getline(fin2, line2)) {
-
-			out_file2 << line2 << "\n";
-
-
-		}
-		
-	}
-
-	cout << "Payment is successful!\n";
-	
-
-	}
-

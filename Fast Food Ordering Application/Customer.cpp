@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
+#include <cctype>
 #define COLUMN_WIDTH 25
 
 using namespace std;
@@ -58,13 +59,58 @@ Customer registerCustomer() {
 	string name, contactNo;
 	double topUpValue;
 	cout << "Please enter your info: \n";
-	cout << "Name: ";
 	cin.ignore(1, '\n');
 
+
+	bool validateName = false;
+	while (!validateName) {
+		cout << "Name: ";
 	getline(cin, name);
-	cout << "Contact Number: ";
-	cin >> contactNo;
-	cout << "Top Up Value (Must be greater than RM20): RM";
+	if (name.length() > 50) {
+		cout << "Please register with a shorter name\n";
+		continue;
+	}
+	for (int i = 0; i < name.length(); i++)
+	{
+		if (!isalpha(name[i])&&name[i]!=' ')
+		{
+			cout << "Name must contain letters only\n";
+		//	cin.clear();
+		//	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			break;
+		}
+		else if (isalpha(name[i]) and i == name.length() - 1) {
+			validateName = true;
+		}
+
+	}
+	}
+
+	bool validateContactNo = false;
+	while (!validateContactNo) {
+
+		cout << "Contact Number: ";
+		cin >> contactNo;
+		if (contactNo.length() < 10|| contactNo.length()>11) {
+			cout << "Invalid phone number\n";
+			continue;
+		}
+		for (int i = 0; i < contactNo.length(); i++)
+		{
+			if (!isdigit(contactNo[i]))
+			{
+				cout << "Invalid phone number\n";
+				//	cin.clear();
+				//	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				break;
+			}
+			else if (isdigit(contactNo[i]) and i == contactNo.length() - 1) {
+				validateContactNo = true;
+			}
+
+		}
+	}
+	cout << "Top Up Value (Must be at least RM20): RM";
 	cin >> topUpValue;
 
 	bool greaterThan20Flag = false;
@@ -95,6 +141,18 @@ Customer registerCustomer() {
 	return Customer(name, contactNo, topUpValue);
 
 }
+void pushBack2(string& str1, string str2)
+{
+	// Appends character by character str2
+	// at the end of str1
+	for (int i = 0; str2[i] != '\0'; i++)
+	{
+		str1.push_back(str2[i]);
+	}
+	//cout << "After push_back : ";
+	//cout << str1;
+}
+
 void writeMemberToFile(Customer customer) {
 	// Create and open a text file
 	ofstream MemberFile("member.txt", std::ios_base::app | std::ios_base::out);
@@ -174,9 +232,10 @@ int getCurrentPointFromFile(string cardNo){
 
 			// Temporary string used to split the string.
 			string s;
-			line;
+			line = line.substr(0, line.length() - COLUMN_WIDTH);
 			line = trim(line);
-			while (i < line.length() - COLUMN_WIDTH) {
+	//		cout << "HERE" << line;
+			while (i < line.length()) {
 				if (line[i] != separator) {
 					// Append the char to the temp string.
 					s += line[i];
@@ -192,11 +251,11 @@ int getCurrentPointFromFile(string cardNo){
 			}
 
 			// Output the last stored word.
-			cout << s << endl;
+			// cout << s << endl;
 
 			found = s;
 
-			return 0;
+			return stoi(found);
 		}
 	}
 
@@ -240,9 +299,13 @@ void updatePoint(string cardNo, int newPoint) {
 	std::stringstream ss(s);
 	std::istream_iterator<std::string> begin(ss);
 	std::istream_iterator<std::string> end;
+
 	std::vector<std::string> v(begin, end);
+	for (int i = 0; i < v.size() - 4; i++) {
+		pushBack2(name, v.at(i) + " ");
+	}
 	//std::copy(v.begin(), v.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
-	out_file << setw(50) << (name) << setw(COLUMN_WIDTH) << (v.at(v.size() - 4)) << setw(COLUMN_WIDTH) << (v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << (newPoint) << setw(COLUMN_WIDTH) << (v.at(v.size() - 1)) << endl;
+	out_file << setw(50) << centered(name) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 4)) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << centered(to_string(newPoint)) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 1)) << endl;
 	out_file.close();
 	ofstream out_file2{ "member.txt",  std::ios::trunc };
 	string line2;
@@ -299,8 +362,11 @@ void updateValue(string cardNo, double newValue) {
 	std::istream_iterator<std::string> begin(ss);
 	std::istream_iterator<std::string> end;
 	std::vector<std::string> v(begin, end);
+	for (int i = 0; i < v.size() - 4; i++) {
+		pushBack2(name, v.at(i) + " ");
+	}
 	//std::copy(v.begin(), v.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
-	out_file << setw(50) << (name) << setw(COLUMN_WIDTH) << (v.at(v.size() - 4)) << setw(COLUMN_WIDTH) << (v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << (v.at(v.size() - 2)) << setw(COLUMN_WIDTH) << (to_string(newValue)) << endl;
+	out_file << setw(50) << centered(name) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 4)) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 3)) << setw(COLUMN_WIDTH) << centered(v.at(v.size() - 2)) << setw(COLUMN_WIDTH) << centered(to_string(newValue)) << endl;
 	out_file.close();
 	ofstream out_file2{ "member.txt",  std::ios::trunc };
 	string line2;
@@ -315,7 +381,7 @@ void updateValue(string cardNo, double newValue) {
 
 }
 
-void cardTopUp()
+void cardTopUp(string passedInCardNo)
 {
 	double balance = 0.0; //should be call out
 	string id;
@@ -324,8 +390,14 @@ void cardTopUp()
 
 
 	string cardNo;
-	cout << "Please enter your card number: ";;
-	cin >> cardNo;
+	if (passedInCardNo.length()>0) {
+		cardNo = passedInCardNo;
+	}
+	else {
+		cout << "Please enter your card number to proceed: ";;
+		cin >> cardNo;
+	}
+	
 	while (cardNo.length() != 9) {
 		cout << "Invalid format! ";
 		cout << "Please enter your card number again: ";;
@@ -341,10 +413,14 @@ void cardTopUp()
 		string line;
 		unsigned int curLine = 0;
 		while (getline(fileInput, line)) {
+			//cout << line.find("ABC000002") << endl;
+			//cout << cardNo << endl;
 			if (line.find(cardNo, 0) != string::npos) {
 				deleteLine = line;
 				//	cout << "FOUND";
+				cout << "\nMember found\n";
 				flagToProceed = true;
+				//cout << "FOUNDDD";
 				break;
 			}
 			else {
@@ -356,11 +432,16 @@ void cardTopUp()
 
 		}
 		if (flagToProceed) break;
-		cout << "NOT FOUND";
-		cout << "Please enter your card number to proceed: ";
+		cout << "NOT FOUND!\n";
+		cout << "Please enter your card number again: ";
 		fileInput.close();
-		string cardNo;
+		// string cardNo;
 		cin >> cardNo;
+		while (cardNo.length() != 9) {
+			cout << "Invalid format! ";
+			cout << "Please enter your card number again: ";;
+			cin >> cardNo;
+		}
 	}
 	balance = getCurrentTopUpValueFromFile(cardNo);
 	int topupamount;
@@ -371,6 +452,9 @@ void cardTopUp()
 
 	do {
 	menu:
+		cout << "---------------------------------------" << endl;
+		cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
+		cout << "---------------------------------------" << endl;
 		cout << "\nPlease select top up amount:" << endl;
 		cout << " -------------------------------- " << endl;
 		cout << setw(10) << "> RM5 " << endl;
@@ -378,16 +462,18 @@ void cardTopUp()
 		cout << setw(10) << "> RM30" << endl;
 		cout << setw(10) << "> RM50" << endl;
 		cout << " -------------------------------- " << endl;
-		cout << "enter your amount :RM";
+		cout << "Enter your amount: RM";
 		cin >> topupamount;
 
 		if (topupamount == 5 || topupamount == 10 || topupamount == 30 || topupamount == 50) {
 			cout << "\n\nNotice: RM0.50 will be deducted for service charges." << endl;
-			cout << "Confirm to top up RM" << topupamount << " into your membership card? \nYES(Y) or NO(N)  >> ";
+			cout << "Confirm to top up RM" << topupamount << " into your membership card? \n\nYES(Y) or NO(N)  >> ";
 			cin >> confirmation;
 			bool validConfirmation = false;
 			while (!validConfirmation) {
 				if (confirmation == "Y" || confirmation == "y") {
+					system("CLS");
+
 					validInput = true;
 					validConfirmation = true;
 					goto displayBalance;
@@ -395,6 +481,7 @@ void cardTopUp()
 				}
 
 				else if (confirmation == "N" || confirmation == "n") {
+					system("CLS");
 					validConfirmation = true;
 					goto conttopup;
 					break;
@@ -415,6 +502,7 @@ void cardTopUp()
 		{
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			system("CLS");
 			cout << "\nInvalid Amount! Please select amount from the list!\n\n\n";
 			validInput = false;
 		}
@@ -426,16 +514,19 @@ void cardTopUp()
 
 	//	if (confirmation !="Y" && confirmation != "y") {
 conttopup:
-	cout << "Do you want to continue to top up? (Y/N) >>";
+	cout << "Do you want to continue to top up? (Y/N) >> ";
 	cin >> conttopup;
 
 	if (conttopup == "N" || conttopup == "n") {
 		cout << "----------------------------------------------------------\n";
-		cout << setw(40) << "TOP UP MODULE END\n";
+		cout << setw(35)<<right << "TOP UP MODULE END"<<endl;
 		cout << "----------------------------------------------------------\n";
+		system("CLS");
 		return;
 	}
 	else if (conttopup == "Y" || conttopup == "Y") {
+		system("CLS");
+
 		goto menu;
 	}
 	else if (conttopup != "N" && conttopup != "n") {
@@ -451,7 +542,7 @@ displayBalance:
 	updateValue(cardNo, balance);
 	cout << "\nYou have successfully top up RM" << topupamount << " into your membership card!" << endl;
 	cout << "---------------------------------------" << endl;
-	cout << "|Balance :RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
+	cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
 	cout << "---------------------------------------" << endl;
 	goto conttopup;
 	//}
