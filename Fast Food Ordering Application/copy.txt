@@ -1,0 +1,6 @@
+                  Customer Name                          Card Number            Contact Number          Membership Point               Value          
+                     quitnon                              ABC000001               0193903300                   14                    11.000000        
+                     quinton                              ABC000004               0193903300                    0                    25.000000        
+                     Quinton                              ABC000005               0193903300                    0                    25.000000        
+                     zhehen                               ABC000002               0193902211                    0                    1.020000         
+                   wong pu jin                            ABC000003               01939032100                2290200                 9.670000         

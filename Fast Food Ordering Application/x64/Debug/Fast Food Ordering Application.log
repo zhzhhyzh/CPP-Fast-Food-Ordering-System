@@ -1,0 +1,8 @@
+﻿  Food.cpp
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(56,13): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(156,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(229,23): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(436,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(37,8): warning C4018: '>': signed/unsigned mismatch
+C:\Users\quint\source\repos\Fast Food Ordering Application\Fast Food Ordering Application\Food.cpp(51): message : see reference to function template instantiation 'std::basic_ostream<char,std::char_traits<char>> &operator <<<char,std::char_traits<char>>(std::basic_ostream<char,std::char_traits<char>> &,const center_helper2<char,std::char_traits<char>> &)' being compiled
+  Fast Food Ordering Application.vcxproj -> C:\Users\quint\source\repos\Fast Food Ordering Application\x64\Debug\Fast Food Ordering Application.exe
