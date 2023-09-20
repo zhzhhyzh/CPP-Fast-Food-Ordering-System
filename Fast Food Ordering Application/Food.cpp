@@ -48,7 +48,7 @@ std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, traits>&
 
 double displayOrders(vector<Food>foods, vector<int>orders, int type) {
 	double total = 0;
-	cout << setw(10) <<centered2("ID")<<setw(50) << centered2("NAME") << setw(35) << centered2("QUANTITY") << setw(35) << centered2("SUBTOTAL") << endl;
+	cout << setw(10) << centered2("ID") << setw(50) << centered2("NAME") << setw(35) << centered2("QUANTITY") << setw(35) << centered2("SUBTOTAL") << endl;
 
 	for (auto it = foods.begin(); it != foods.end(); ++it) {
 
@@ -60,7 +60,7 @@ double displayOrders(vector<Food>foods, vector<int>orders, int type) {
 			str1 << round(count * (*it).getPrice() * 100) / 100;
 			// Sending a number as a stream into output
 			// string
-			cout << setw(10) << centered2(to_string(int((*it).getId())))<<setw(50) << centered2((*it).getName()) << setw(35) << centered2(to_string(count)) << setw(35)<<centered2(str1.str()) << endl;;
+			cout << setw(10) << centered2(to_string(int((*it).getId()))) << setw(50) << centered2((*it).getName()) << setw(35) << centered2(to_string(count)) << setw(35) << centered2(str1.str()) << endl;;
 		}
 	}
 
@@ -76,9 +76,9 @@ double displayOrders(vector<Food>foods, vector<int>orders, int type) {
 		// Sending a number as a stream into output
 		// string
 		str1 << round(total * 0.1 * 100) / 100;
-		cout << "\nSERVICE CHARGE (10%): "<< str1.str() << endl;
+		cout << "\nSERVICE CHARGE (10%): " << str1.str() << endl;
 		total *= 1.1;
-		}
+	}
 	ostringstream str1;
 
 	// Sending a number as a stream into output
@@ -218,7 +218,7 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 
 	// use value to purchase
 	if (selection == 1) {
-	
+
 		double value = currentValue - total;
 
 		updateValue(cardNo, value);
@@ -231,13 +231,17 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 	system("CLS");
 	double valueBalance = getCurrentTopUpValueFromFile(cardNo);
 	int pointBalance = getCurrentPointFromFile(cardNo);
+	cout << "Receipt:" << endl<<endl;
+
+	displayOrders(foods, orders, orderChoice);
 	cout << "---------------------------------------" << endl;
 	cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << valueBalance << "|" << endl;
 	cout << "---------------------------------------" << endl;
 	cout << "|Point   : " << setw(26) << left << pointBalance << "|" << endl;
 	cout << "---------------------------------------" << endl;
 	cout << "\nPayment is successful! Enjoy your meal!\n";
-
+	system("pause");
+	system("cls");
 
 }
 
@@ -247,14 +251,14 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 void foodSelection() {
 
 	vector<Food> set_foods;
-	set_foods.push_back(Food("Big Breakfast : Ham + Sausage + Fried Egg + Toast", 12.00, 1));
-	set_foods.push_back(Food("McChicken Set: Cola + Chicken Burger + Brownies", 15.50, 2));
-	set_foods.push_back(Food("McFillet Set: Cola + Fish Burger + French Fries", 21.50, 3));
+	set_foods.push_back(Food("Burrito + Beef Backribs + Filete de Salmon", 50.00, 1));
+	set_foods.push_back(Food("Taco + Braised Australian Lamb Shank ", 40.00, 2));
+	set_foods.push_back(Food("Soft-shell Taco + Grain-fed Rib Eye-Australia", 30.00, 3));
 
 	vector<Food> ala_carte_foods;
-	ala_carte_foods.push_back(Food("Chicken Burger", 10.90, 4));
-	ala_carte_foods.push_back(Food("French Fries", 10.00, 5));
-	ala_carte_foods.push_back(Food("Ice Lemon Tea",4.00, 6));
+	ala_carte_foods.push_back(Food("Chili Con Carne", 15.00, 4));
+	ala_carte_foods.push_back(Food("Burrito", 13.00, 5));
+	ala_carte_foods.push_back(Food("Las Carretas Fruit Punch ", 10.00, 6));
 
 	// all foods grouped together
 	vector<Food>foods;
@@ -265,7 +269,7 @@ void foodSelection() {
 	bool flag = true;
 	bool isCheckout = true;
 
-		int orderChoice, setAlaCarteChoice;
+	int orderChoice, setAlaCarteChoice;
 	while (flag) {
 		cout << "ORDER FOOD\n\n";
 
@@ -285,7 +289,7 @@ void foodSelection() {
 			break;
 		}
 
-		order: bool orderFlag = true;
+	order: bool orderFlag = true;
 		while (orderFlag) {
 			system("CLS");
 			switch (orderChoice) {
@@ -296,8 +300,8 @@ void foodSelection() {
 				cout << "ORDER FOOD (DINE IN):\n\n";
 				break;
 			}
-		cout << "Return to previous page (0) Set (1) Ala Carte (2) Show Orders (3) Delete An Order (4) Proceed To Checkout (5) \n";
-	operationMenu:			cout << "\nPlease enter: ";
+			cout << "Return to previous page (0) Set (1) Ala Carte (2) Show Orders (3) Delete An Order (4) Proceed To Checkout (5) \n";
+		operationMenu:			cout << "\nPlease enter: ";
 			cin >> setAlaCarteChoice;
 			while (!cin || setAlaCarteChoice < 0 || setAlaCarteChoice>5) {
 				cin.clear();
@@ -379,7 +383,7 @@ void foodSelection() {
 					cout << setw(10) << centered2(to_string(int((*it).getId()))) << setw(50) << centered2((*it).getName()) << setw(35) << centered2(str1.str()) << endl;
 
 				}
-		
+
 
 				cout << "\nPlease Select Your Choice (number): ";
 				int choice, quantity;
@@ -404,7 +408,7 @@ void foodSelection() {
 				for (int i = 0; i < quantity; i++) {
 					orders.push_back(choice);
 				}
-				orders.push_back(choice);
+				//orders.push_back(choice);
 				//cout << "Enter Y to continue order, other to quit ordering\n";
 			//	string isQuit;
 			//	cin >> isQuit;
@@ -414,7 +418,7 @@ void foodSelection() {
 
 			}
 			else if (setAlaCarteChoice == 4) {
-			system("CLS");
+				system("CLS");
 
 				while (true) {
 					cout << "0. Return to previous page\n\n";
@@ -422,8 +426,8 @@ void foodSelection() {
 					int choiceToDelete, quantityToDelete;
 					cout << "\nEnter the ID of the food to be deleted: ";
 					cin >> choiceToDelete;
-					
-					while (!cin ||( choiceToDelete!=0 && std::find(orders.begin(), orders.end(), choiceToDelete)==orders.end())) {
+
+					while (!cin || (choiceToDelete != 0 && std::find(orders.begin(), orders.end(), choiceToDelete) == orders.end())) {
 						cin.clear();
 						cin.ignore(numeric_limits<streamsize>::max(), '\n');
 						cout << "Invalid choice\n";
@@ -453,11 +457,11 @@ void foodSelection() {
 						{
 							orders.erase(it);
 						}
-					
+
 					}
 
 
-					
+
 					system("CLS");
 
 
@@ -465,34 +469,34 @@ void foodSelection() {
 				}
 
 				continue;
-				
+
 			}
 			else if (setAlaCarteChoice == 3) {
-			system("CLS");
+				system("CLS");
 
-			displayOrders(foods, orders, orderChoice);
-			// cout << "Press ANY KEY to continue... ";
-			cout << endl;
-			// on windows
-			system("pause");
+				displayOrders(foods, orders, orderChoice);
+				// cout << "Press ANY KEY to continue... ";
+				cout << endl;
+				// on windows
+				system("pause");
 
-			// on linux or mac
-			system("read");
+				// on linux or mac
+				system("read");
 
 			}
 			else if (setAlaCarteChoice == 5) {
 
-			if (orders.size() <= 0) {
-				cout << "Nothing to checkout!\n";
-				goto operationMenu;
-			}
-			else {
+				if (orders.size() <= 0) {
+					cout << "Nothing to checkout!\n";
+					goto operationMenu;
+				}
+				else {
 
-				orderFlag = false;
-				flag = false;
-				system("CLS");
+					orderFlag = false;
+					flag = false;
+					system("CLS");
 
-			}
+				}
 
 
 			}
@@ -517,7 +521,7 @@ void foodSelection() {
 		displayOrders(foods, orders, orderChoice);
 		cout << "Proceed to checkout? (Y/N): ";
 		cin >> yesOrNo;
-		while (yesOrNo != "Y" && yesOrNo !="y" && yesOrNo !="N" && yesOrNo != "n") {
+		while (yesOrNo != "Y" && yesOrNo != "y" && yesOrNo != "N" && yesOrNo != "n") {
 			cout << "Proceed to checkout? (Y/N): ";
 			cin >> yesOrNo;
 
@@ -533,10 +537,10 @@ void foodSelection() {
 		else {
 			goto order;
 		}
-		
-	//	return orders;
+
+		//	return orders;
 	}
 
 
-	
+
 }
