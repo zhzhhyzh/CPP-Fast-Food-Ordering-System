@@ -7,7 +7,19 @@
 #include "Food.h"
 #include "Customer.h"
 #include <stdlib.h>
+#include <algorithm>
+#include <string_view>
+#include <iterator>
+#include <string>
+
 using namespace std;
+inline std::string trim(const std::string& s)
+{
+    auto wsfront = std::find_if_not(s.begin(), s.end(), [](int c) {return std::isspace(c); });
+    auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](int c) {return std::isspace(c); }).base();
+    return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
+}
+void sort();
 
 void centerify_output(std::string str, int num_cols) {
     // Calculate left padding
@@ -26,8 +38,9 @@ int main() {
 	bool flag = true;
 	while (flag) {
 		int menuChoice;
-                                                                                                    
-                                                                                                    
+        
+        // sort member file during the start of each loop
+        sort();
                                                                                                     
                                                                                                     
                                                                                                     
@@ -231,4 +244,52 @@ int main() {
 	}
 	
 	return 0;
+}
+
+void sort() {
+    ifstream fileInput;
+    fileInput.open("member.txt");
+    string line;
+    vector<string> lines;
+    if (!fileInput.is_open()) {
+        cout << "Unexpected error occured when opening member file.";
+        return;
+    }
+
+    int lineNo=0;
+    while (getline(fileInput, line)) { 
+      
+        if (lineNo != 0) lines.push_back(line);
+       // cout << line;
+        lineNo++;
+    }
+    // Sort the lines based on member number in alphabetical order
+    sort(lines.begin(), lines.end(),
+        [](string const& l,std::string const& r) {
+            return l.substr(50) < r.substr(50);
+        }
+    );
+
+   // for (auto i = lines.begin(); i != lines.end(); ++i)
+        //cout << *i << endl;
+
+    fileInput.close();
+    ofstream fileOutput;
+    fileOutput.open("member.txt");
+
+    if (fileOutput.is_open()) {
+        lines.insert(lines.begin(), "                  Customer Name                          Card Number            Contact Number          Membership Point               Value          ");
+         for (auto i = lines.begin(); i != lines.end(); ++i)
+             cout << *i << endl;
+
+        
+        // Write the sorted lines to the output file
+        std::copy(lines.begin(), lines.end(), std::ostream_iterator < std::string >(fileOutput, "\n"));
+        fileOutput.close();
+    }
+    else {
+        cout << "Unexpected error occured when opening member file.";
+            return;
+    }
+ 
 }
