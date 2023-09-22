@@ -524,12 +524,12 @@ conttopup:
 		system("CLS");
 		return;
 	}
-	else if (conttopup == "Y" || conttopup == "Y") {
+	else if (conttopup == "Y" || conttopup == "y") {
 		system("CLS");
 
 		goto menu;
 	}
-	else if (conttopup != "N" && conttopup != "n") {
+	else if (conttopup != "N" && conttopup != "n" && conttopup!="Y" && conttopup!="y") {
 		cout << "Invalid Input!\n";
 		goto conttopup;
 	}
