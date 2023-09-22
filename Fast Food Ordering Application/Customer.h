@@ -46,6 +46,11 @@ public:
 	double getTopUpValue() {
 		return this->topUpValue;
 	}
+
+	// modify < operator, when a < b, it will compare based on memberNo, can be changed if we want to compare based on other property
+	bool operator< (const Customer& other) const {
+		return cardNo < other.cardNo;
+	}
 private:
 	string name;
 	string cardNo;
