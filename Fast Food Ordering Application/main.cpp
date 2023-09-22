@@ -99,15 +99,25 @@ int main() {
 		cout << "3. Top Up Membership Card\n";
 
 		cout << "\n0. Quit Program\n";
-		cout << "\nPlease enter: ";
 
-		cin >> menuChoice;
-		while (!cin || menuChoice < 0 || menuChoice>4) {
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "Invalid choice. Please enter again: ";
-			cin >> menuChoice;
-		}
+        string input;
+
+        while (true) {
+            cout << "Please Select Your Choice (number): ";
+            cin >> input;
+
+            // Check if the entire input is a valid integer
+            if (input.find_first_not_of("0123456789") == string::npos) {
+                menuChoice = stoi(input);
+
+                // Check if it's within the specified range
+                if (menuChoice >= 0 && menuChoice < 4) {
+                    break; // Valid input, exit the loop.
+                }
+            }
+
+            cout << "Invalid choice. Please enter again:\n ";
+        }
 		system("CLS");
 
 
