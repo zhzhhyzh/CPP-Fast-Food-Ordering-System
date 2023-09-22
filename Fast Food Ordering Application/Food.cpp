@@ -173,6 +173,8 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 			if (selection == 1) {
 				currentValue = getCurrentTopUpValueFromFile(cardNo);
 				if (currentValue < total) {
+					cout << "Current Balance is: " << currentValue << endl;
+					cout << "Billing Total: " << total << endl;
 					cout << "Not enough balance!\n";
 
 					string wantTopUp;
@@ -251,12 +253,12 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 void foodSelection() {
 
 	vector<Food> set_foods;
-	set_foods.push_back(Food("Burrito + Beef Backribs + Filete de Salmon", 50.00, 1));
-	set_foods.push_back(Food("Taco + Braised Australian Lamb Shank ", 40.00, 2));
-	set_foods.push_back(Food("Soft-shell Taco + Grain-fed Rib Eye-Australia", 30.00, 3));
+	set_foods.push_back(Food("Burrito + Beef Backribs + Filete de Salmon", 30.00, 1));
+	set_foods.push_back(Food("Taco + Braised Australian Lamb Shank ", 25.00, 2));
+	set_foods.push_back(Food("Soft-shell Taco + Grain-fed Rib Eye-Australia", 20.00, 3));
 
 	vector<Food> ala_carte_foods;
-	ala_carte_foods.push_back(Food("Chili Con Carne", 15.00, 4));
+	ala_carte_foods.push_back(Food("Chili Con Carne", 12.00, 4));
 	ala_carte_foods.push_back(Food("Burrito", 13.00, 5));
 	ala_carte_foods.push_back(Food("Las Carretas Fruit Punch ", 10.00, 6));
 
@@ -273,7 +275,7 @@ void foodSelection() {
 	while (flag) {
 		cout << "ORDER FOOD\n\n";
 
-		cout << "Previous Page (0) Take Away (1) Dine In (2)\n";
+		cout << "Previous Page (0)\nTake Away (1)\nDine In (2)\n";
 		cout << "\nPlease enter: ";
 		cin >> orderChoice;
 		while (!cin || orderChoice < 0 || orderChoice>2) {
@@ -300,7 +302,7 @@ void foodSelection() {
 				cout << "ORDER FOOD (DINE IN):\n\n";
 				break;
 			}
-			cout << "Return to previous page (0) Set (1) Ala Carte (2) Show Orders (3) Delete An Order (4) Proceed To Checkout (5) \n";
+			cout << "Return to previous page (0)\nSet (1) \nAla Carte (2) \nShow Orders (3) \nDelete An Order (4) \nProceed To Checkout (5) \n";
 		operationMenu:			cout << "\nPlease enter: ";
 			cin >> setAlaCarteChoice;
 			while (!cin || setAlaCarteChoice < 0 || setAlaCarteChoice>5) {
@@ -333,26 +335,66 @@ void foodSelection() {
 
 				}
 
-				cout << "\nPlease Select Your Choice (number): ";
 				int choice, quantity;
-				cin >> choice;
-				while (!cin || choice < 0 || choice>set_foods.size()) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice. Please enter again: ";
-					cin >> choice;
-				}
+				bool validInput;
+				
+				do {
+					cout << "Please Select Your Choice (number): ";
+					string input;
+					cin >> input;
+					validInput = true;
+
+					for (char c : input) {
+						if (!isdigit(c)) {
+							validInput = false;
+							break;
+						}
+					}
+
+					if (validInput) {
+						choice = stoi(input);
+						if (choice < 0 || choice > set_foods.size()) {
+							validInput = false;
+						}
+					}
+					
+					if (!validInput) {
+						cout << "Invalid choice. Please enter a valid number." << endl;
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					}
+				} while (!validInput);
 				if (choice == 0) continue;
 
-				cout << "Please Enter Your Quantity: ";
-				cin >> quantity;
-				while (!cin) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice. Please enter again: ";
 
-					cin >> quantity;
-				}
+				do {
+					cout << "Please Enter Your Quantity: ";
+					string input;
+					cin >> input;
+					validInput = true;
+
+					for (char c : input) {
+						if (!isdigit(c)) {
+							validInput = false;
+							break;
+						}
+					}
+
+					if (validInput) {
+						quantity = stoi(input);
+						if (quantity <= 0) {
+							validInput = false;
+						}
+					}
+
+					if (!validInput) {
+						cout << "Invalid quantity. Please enter a valid positive number." << endl;
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					}
+				} while (!validInput);
+
+				
 				for (int i = 0; i < quantity; i++) {
 					orders.push_back(choice);
 				}
@@ -384,27 +426,66 @@ void foodSelection() {
 
 				}
 
-
-				cout << "\nPlease Select Your Choice (number): ";
 				int choice, quantity;
-				cin >> choice;
+				bool validInput;
 
-				while (!cin || (choice != 0 && (choice <= set_foods.size() || choice > set_foods.size() + ala_carte_foods.size()))) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice. Please enter again: ";
-					cin >> choice;
-				}
+				do {
+					cout << "Please Select Your Choice (number): ";
+					string input;
+					cin >> input;
+					validInput = true;
+
+					for (char c : input) {
+						if (!isdigit(c)) {
+							validInput = false;
+							break;
+						}
+					}
+					if(validInput){
+						choice = stoi(input);
+						if ((choice > 6 || choice < 4) && (choice <= set_foods.size() || choice > set_foods.size() + ala_carte_foods.size())) {
+							validInput = false;
+						}
+						if (choice == 0) {
+							validInput = true;
+						}
+					}
+					if (!validInput) {
+						cout << "Invalid choice. Please enter a valid number." << endl;
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					}
+				} while (!validInput);
 				if (choice == 0) continue;
+				do {
+					cout << "Please Enter Your Quantity: ";
+					string input;
+					cin >> input;
+					validInput = true;
 
-				cout << "Please Enter Your Quantity: ";
-				cin >> quantity;
-				while (!cin) {
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					cout << "Invalid choice. Please enter again: ";
-					cin >> quantity;
-				}
+					for (char c : input) {
+						if (!isdigit(c)) {
+							validInput = false;
+							break;
+						}
+					}
+
+					if (validInput) {
+						quantity = stoi(input);
+						if (quantity <= 0) {
+							validInput = false;
+						}
+					}
+
+					if (!validInput) {
+						cout << "Invalid quantity. Please enter a valid positive number." << endl;
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					}
+				} while (!validInput);
+
+			
+			
 				for (int i = 0; i < quantity; i++) {
 					orders.push_back(choice);
 				}
@@ -424,30 +505,65 @@ void foodSelection() {
 					cout << "0. Return to previous page\n\n";
 					displayOrders(foods, orders, orderChoice);
 					int choiceToDelete, quantityToDelete;
-					cout << "\nEnter the ID of the food to be deleted: ";
-					cin >> choiceToDelete;
+					bool validInput;
 
-					while (!cin || (choiceToDelete != 0 && std::find(orders.begin(), orders.end(), choiceToDelete) == orders.end())) {
-						cin.clear();
-						cin.ignore(numeric_limits<streamsize>::max(), '\n');
-						cout << "Invalid choice\n";
-						cout << "Enter the number of the order to be deleted: ";
-						cin >> choiceToDelete;
+					do {
+						cout << "\nEnter the ID of the food to be deleted: ";
+						string input;
+						cin >> input;
+						validInput = true;
 
-					}
-					if (choiceToDelete == 0) break;
+						for (char c : input) {
+							if (!isdigit(c)) {
+								validInput = false;
+								break;
+							}
+						}
+						if (validInput) {
+							choiceToDelete = stoi(input);
+							if (choiceToDelete < 0 || (choiceToDelete != 0 && std::find(orders.begin(), orders.end(), choiceToDelete) == orders.end())) {
+								validInput = false;
+							}
+						}
+						if (!validInput) {
+							cout << "Invalid choice. Please enter the number of the order to be deleted." << endl;
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+						}
+					} while (!validInput);
+					if (choiceToDelete == 0)  break;
+					
+					
 
 					int count = std::count(orders.begin(), orders.end(), choiceToDelete);
 
-					cout << "Enter the quantity of the order to be deleted: ";
-					cin >> quantityToDelete;
-					while (!cin || quantityToDelete<0 || quantityToDelete>count) {
-						cin.clear();
-						cin.ignore(numeric_limits<streamsize>::max(), '\n');
-						cout << "Invalid choice\n";
+					
+					do {
 						cout << "Enter the quantity of the order to be deleted: ";
-						cin >> quantityToDelete;
-					}
+						string input;
+						cin >> input;
+						validInput = true;
+
+						for (char c : input) {
+							if (!isdigit(c)) {
+								validInput = false;
+								break;
+							}
+						}
+
+						if (validInput) {
+							quantityToDelete = stoi(input);
+							if (quantityToDelete < 0) {
+								validInput = false;
+							}
+						}
+
+						if (!validInput) {
+							cout << "Invalid quantity. Please enter a valid positive number." << endl;
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+						}
+					} while (!validInput);
 
 					for (int i = 0; i < quantityToDelete; i++) {
 						// Get the iterator to the first occurrence of given value in vector

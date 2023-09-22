@@ -7,19 +7,7 @@
 #include "Food.h"
 #include "Customer.h"
 #include <stdlib.h>
-#include <algorithm>
-#include <string_view>
-#include <iterator>
-#include <string>
-
 using namespace std;
-inline std::string trim(const std::string& s)
-{
-    auto wsfront = std::find_if_not(s.begin(), s.end(), [](int c) {return std::isspace(c); });
-    auto wsback = std::find_if_not(s.rbegin(), s.rend(), [](int c) {return std::isspace(c); }).base();
-    return (wsback <= wsfront ? std::string() : std::string(wsfront, wsback));
-}
-void sort();
 
 void centerify_output(std::string str, int num_cols) {
     // Calculate left padding
@@ -38,56 +26,7 @@ int main() {
 	bool flag = true;
 	while (flag) {
 		int menuChoice;
-        
-        // sort member file during the start of each loop
-        sort();
                                                                                                     
-                                                                                                    
-                                                                                                    
-  /*  cout<<"                          !JJY?~.                           .^                                  " << endl;
-    cout<<"                          P!:?JPP7         :~7?YJ^        .^~7!~.                               "<<endl;
-    cout<<"                          75.!!!JB5^    :7?7!!!5#5         :!!J~         ^.                     "<<endl;
-    cout<<"                          ~G:~7!!7PG7:!YY!^~!!?GB?         .:..:..   ...:7!....                 "<<endl;
-    cout<<"               :~~~^^:...:YJ.!!!!!!JYYY7~~!!!JBBG?7!~^.         ...::^~!!7???~.                 "<<endl;
-    cout<<"              ?G?JJJYYYYJJ7:~!!!!!7?JYJYYYJJ557^:^~7YGGPY?!:.        ..!77?57                   "<<endl;
-    cout<<"              ^JJJ?!!!!!!!~!?JYYYYY?~:..:~!!^.~7??JJ~:?5PPGGPJ!:      .^:. :~.                  "<<endl;
-    cout<<"                .~YGYJYYJJJYJ~. .:~7???7!~~!?J?7??YBB~:YYYYY5PGG57:                             "<<endl;
-    cout<<"               ^???J?7^^~!~^..:!?J???????7??7?5PPPGBB^^YYYJYYJJJ5GGY~                           "<<endl;
-    cout<<"              !G~   .~?J???????77J5Y55G#BBGGBBBGGPPPGYYYY?^?YYYYYJY5G5!                         "<<endl;
-    cout<<"              ?P.~?JJ??JJYY5555PBBBGPP5YJ?7!~^^:....^PBPYYYYYYJYYYYJJ5GP~                       "<<endl;
-    cout<<"               5PYJJYPBBGP55YJ?7~^^:...              !BB5JYYY7.~JYYYYJJPB5^                     "<<endl;
-    cout<<"              !GGPP5?~^:..    ..:^~~~!!!!!!!!!~~^^.  J#B5YYYYJ??YYYJJJ?7?J7.                    "<<endl;
-    cout<<"             ?BPYY!       .^~!!7777777????7777!~~^: ^55Y77!!!~~~^^^^::..::^~~!7?JYYYJJ7^        "<<endl;
-    cout<<"            ?BPYYYJ.  .:~!77777777!!~~^^::.........::::^^~!!7??JJY55PPPYJJYGBBBB5!~^:^7PP~      "<<endl;
-    cout<<"           7#GYYYYGY: .:::::........:::^^~~!77?JYY555PGGBGY?77?PBBBBB?::~^ .YBGB7 :5Y^ .PB?     "<<endl;
-    cout<<"           ^~^... .::::^^^~!77??JY555555PBBBBB#Y!~^^:5BB5:.!?^ .PBBB! ~B#B^ ~BBB! ~##G. !#B~    "<<endl;
-    cout<<"         ::^^~~!7?JY5PPGGBGJ7!?BB7^^::::PBGGBBG: 7Y55BBP. 5##P. YBB5  P#GB! ^BBB~ !#BB^ ^BBJ    "<<endl;
-    cout<<"       ~YYJJ??GB#G~~GBBBBJ.^7??BGJY: ?GGBGGBBB5 .B#BBBB! !#BBP. Y#B? ^BBGB! ^BBB^ 7#BB^ ^BBY    "<<endl;
-    cout<<"      ~B~ ^~~?BBB~ :BBBBJ !B##BBB#P..GBGGBBBBB? !#BBBBG. Y#BB5  PBB~ !#BBB~ ~#BG: ?#BB^ ~#BY    "<<endl;
-    cout<<"     .PJ ~####BB7..^BBBB: J#BBBBBB7 !BBBBBBBBB^ ^!~7BBY .GBBB? .GBG: ?#BBB^ 7#BG. J#BG. 7#B7    "<<endl;
-    cout<<"     ?G: P#BBBB? J.!#BBB~ .5BBBBBG: Y#BBBBBBBP. !775#B7 ^BBBB! ~#BP. J#BBP. J#BP. Y#BJ  5#G.    "<<endl;
-    cout<<"    :B? ^5JYBBY ?P 7#BBBG^ .PBBBBY :BBGJJ??GBJ ^###BBB~ !#BBG: J#BP. J#B#J .GBB5  5B5. ~B#7     "<<endl;
-    cout<<"    YG. ...J#5.~#J J#BBBBP: ~BBBB~ 7#BY~!!?BB~ 7#BBBBB^ !#BB? :GBBG: ^PPJ. J#BBY  ^: :?B#J      "<<endl;
-    cout<<"   ~B! ~BBB#P. 5G~ J#BBBB#J ^BBBP. P#BBB###BG. 5#BBBBB! .?J! :5#BBBY^....~5#BBB57JJYPB#B7       "<<endl;
-    cout<<"   55  P#BBG^  ..  5#BBBBG~ J#BB? ^BBBBBBBBB? .BBBBBBBG7^:^~JG#BBBBBBGPGB##BBBBBB##BBBYJ7       "<<endl;
-    cout<<"  ~B^ !#BBB~ !5PY  P#J!?7: ?#BBB^ J#BBBBBBBBJ7YBBBBBBGBBBBB##BBBBBBBBBBBBBBBBBBBBBBB#P          "<<endl;
-    cout<<"  YJ .GBBB! ~B##Y .GB!::^7P#BBBG5PBBBBBBBBBBBBBBBBGGBBBBBBBBBBBBBBBBBBBBBBGGPP55YJJ?7^          "<<endl;
-    cout<<" .P!^J#BBG?JB#BBGPGBGBBBB#BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGGGPP5YYJ?77!~~^::...     ...:^^.       "<<endl;
-    cout<<"  ~J5P55YYYYJ7!JBBBBBBBBBBBBBBBBBBBBBBBGGPPP5YJJ?77!~^^::...  .....::^^~~!!77777?JJJYY7:        "<<endl;
-    cout<<"                ~PBBBGGGPP55YJJ?7!~~^^::........::^^^~!!!77??JJ?JYYYY!?Y77YY7!:!?YYJ7:          "<<endl;
-    cout<<"                 .^^:::......:::^^~~~!!777?JJJJ?YY7JYY7~7~?YYY7:^?YYY^!!~^YYYJ.?YYY~            "<<endl;
-    cout<<"       ....:^^^~~~~!!!7??JJ777JYJ7!~!?YY?:~JYY?.JY^~YY!.!.7YYY:~~:?YY!7?~^YYYY!7YYYJ7^.         "<<endl;
-    cout<<"    .~?JJJJY777?YYY7^!!JYY^^!!?YJJ?.JYYY^^^:JYY^!J~~YY?:?7~?YJ!JY?7JJJJJJJYYYYYJJJJ???!.        "<<endl;
-    cout<<"      .~JYYY^~!.JYY7.!!?YY?!!~^YYYJ:?JY?^?J7!YYJ777JJJJJJYJJJJYJJJJJJJY5Y7~~^^::...             "<<endl;
-    cout<<"         !YY!:7^!JYJ:!!7JY?!!!?JJJJ?JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ5GGY^                       "<<endl;
-    cout<<"       :7JYYJ?YY?JYYJJJJJJYYYYJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ??JJ5GGP?:                         "<<endl;
-    cout<<"     :7JJ???777!!~~^^^::..^7YPPP5YJJJJJJJJJJJJJJJ?????????JJY5PGG5?^                            "<<endl;
-    cout<<"     ::...                   .^7J5PPP55YYJJJJJJJJJJJYY55PPGGPY?~:                               "<<endl;
-    cout<<"                                  .:~!7JJY555555555YYJ?7!~^.                                    "<<endl;
-    cout<<"                                             ...                                                "<<endl;
-    cout<<"                                                                                                "<<endl;
-                                                                                                    
-                                                                                                    */
 
         system("Color E4");
 
@@ -130,44 +69,11 @@ int main() {
          "                =%##%##********++++++**********#######*++=-:          ",          
          "                  :-====================---:::...                     ",          
                                                                                           
-                                                                                          
-
-
-//
-//        "        :~7?JJJJJJJJJJJJ?!:.        ",
-//        "    .7PGPYJ?77777777777??YPGGJ:     ",
-//        "  .5#Y~^^^^^^^^^^^^^^^^^^^^^!Y#G.   ",
-//        " :&P^:^^^^^^^^^^^^^^^^^^^^^^^^^5&!  ",
-//        ".&Y.:^^^^^^^^^^^^^^^^^^^^^^^^^^:?@^ ",
-//        "?@???JJJJJJJJJJJJJJJJJJJJJJJJJJJ?&G ",
-//        "J@BB##################&&&#&######@B ",
-//        "J@                              G&B ",
-//        "J@##&&&&&&&&&&&&&&&&&&#GGB&&&&&&&@B ",
-//        "J&                              G#B ",
-//        "J@55GGGGGGGGGGGGGGGGGGGB#GGGGGGGG&B ",
-//        "J@                               &# ",
-//        "J@:.^^^^^^^^^^^^^^^^^^^^^^^^^^^^:#B ",
-//        ".BB7!!!!!!!!!!!!!!!!!!!!!!!!!!!?G&^ ",
-//        "  ^JY55555555555555555555555555Y!   " ,      
+                                                                                               
         };
 
-                                                  
-        //cout<<"        :~7?JJJJJJJJJJJJ?!:.        "<<endl;      
-        //cout<<"    .7PGPYJ?77777777777??YPGGJ:     "<<endl;      
-        //cout<<"  .5#Y~^^^^^^^^^^^^^^^^^^^^^!Y#G.   "<<endl;      
-        //cout<<" :&P^:^^^^^^^^^^^^^^^^^^^^^^^^^5&!  "<<endl;      
-        //cout<<".&Y.:^^^^^^^^^^^^^^^^^^^^^^^^^^:?@^ "<<endl;      
-        //cout<<"?@???JJJJJJJJJJJJJJJJJJJJJJJJJJJ?&G "<<endl;      
-        //cout<<"J@BB##################&&&#&######@B "<<endl;      
-        //cout<<"J@                              G&B "<<endl;      
-        //cout<<"J@##&&&&&&&&&&&&&&&&&&#GGB&&&&&&&@B "<<endl;      
-        //cout<<"J&                              G#B "<<endl;      
-        //cout<<"J@55GGGGGGGGGGGGGGGGGGGB#GGGGGGGG&B "<<endl;      
-        //cout<<"J@                               &# "<<endl;      
-        //cout<<"J@:.^^^^^^^^^^^^^^^^^^^^^^^^^^^^:#B "<<endl;      
-        //cout<<".BB7!!!!!!!!!!!!!!!!!!!!!!!!!!!?G&^ "<<endl;      
-        //cout<<"  ^JY55555555555555555555555555Y! " << endl;
-        int num_cols = 100;
+                                                 
+        int num_cols = 125;
 
         //// VIRTUAL BORDER
         //std::cout << std::endl;
@@ -186,6 +92,7 @@ int main() {
         //for (int i = 0; i < num_cols; ++i) std::cout << ' ';
         //std::cout << '|' << std::endl;
 		cout << "\n\n\nWELCOME TO MTACO!\n\n";
+        cout << "Input Selection to continue... \n";
 		cout << "1. Register Customer\n";
 		cout << "2. Make an order\n";
 		//cout << "3. Redeem Gift Using Membership Point\n";
@@ -244,52 +151,4 @@ int main() {
 	}
 	
 	return 0;
-}
-
-void sort() {
-    ifstream fileInput;
-    fileInput.open("member.txt");
-    string line;
-    vector<string> lines;
-    if (!fileInput.is_open()) {
-        cout << "Unexpected error occured when opening member file.";
-        return;
-    }
-
-    int lineNo=0;
-    while (getline(fileInput, line)) { 
-      
-        if (lineNo != 0) lines.push_back(line);
-       // cout << line;
-        lineNo++;
-    }
-    // Sort the lines based on member number in alphabetical order
-    sort(lines.begin(), lines.end(),
-        [](string const& l,std::string const& r) {
-            return l.substr(50) < r.substr(50);
-        }
-    );
-
-   // for (auto i = lines.begin(); i != lines.end(); ++i)
-        //cout << *i << endl;
-
-    fileInput.close();
-    ofstream fileOutput;
-    fileOutput.open("member.txt");
-
-    if (fileOutput.is_open()) {
-        lines.insert(lines.begin(), "                  Customer Name                          Card Number            Contact Number          Membership Point               Value          ");
-         for (auto i = lines.begin(); i != lines.end(); ++i)
-             cout << *i << endl;
-
-        
-        // Write the sorted lines to the output file
-        std::copy(lines.begin(), lines.end(), std::ostream_iterator < std::string >(fileOutput, "\n"));
-        fileOutput.close();
-    }
-    else {
-        cout << "Unexpected error occured when opening member file.";
-            return;
-    }
- 
 }

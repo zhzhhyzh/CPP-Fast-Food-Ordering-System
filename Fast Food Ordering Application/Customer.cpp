@@ -529,7 +529,7 @@ conttopup:
 
 		goto menu;
 	}
-	else if (conttopup != "N" && conttopup != "n" && conttopup!="Y" && conttopup!="y") {
+	else  {
 		cout << "Invalid Input!\n";
 		goto conttopup;
 	}
@@ -540,7 +540,7 @@ conttopup:
 displayBalance:
 	balance += (double)topupamount - 0.5;
 	updateValue(cardNo, balance);
-	cout << "\nYou have successfully top up RM" << topupamount << " into your membership card!" << endl;
+	cout << "\nYou have successfully top up RM" << topupamount << " into your membership card (" << cardNo << ") !" << endl;
 	cout << "---------------------------------------" << endl;
 	cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
 	cout << "---------------------------------------" << endl;
