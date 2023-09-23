@@ -64,7 +64,7 @@ Customer registerCustomer() {
 
 	bool validateName = false;
 	while (!validateName) {
-		cout << "Name: ";
+		cout << "Name (Only letter accepted): ";
 	getline(cin, name);
 	if (name.length() > 50) {
 		cout << "Please register with a shorter name\n";
@@ -74,7 +74,7 @@ Customer registerCustomer() {
 	{
 		if (!isalpha(name[i])&&name[i]!=' ')
 		{
-			cout << "Name must contain letters only\n";
+			cout << "*Name must contain letters only\n";
 		//	cin.clear();
 		//	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			break;
@@ -89,7 +89,7 @@ Customer registerCustomer() {
 	bool validateContactNo = false;
 	while (!validateContactNo) {
 
-		cout << "Contact Number: ";
+		cout << "Contact Number (0123456789): ";
 		cin >> contactNo;
 		if (contactNo.length() < 10|| contactNo.length()>11) {
 			cout << "Invalid phone number\n";
@@ -110,32 +110,29 @@ Customer registerCustomer() {
 
 		}
 	}
-	cout << "Top Up Value (Must be at least RM20): RM";
-	cin >> topUpValue;
+	
+	string input;
 
-	bool greaterThan20Flag = false;
-	if (cin && topUpValue >= 20) {
-		greaterThan20Flag = true;
-	}
-	while (!cin || !greaterThan20Flag) {
-		if (!cin) {
-
-			cout << "Please enter a number!\n";
-		}
-		else {
-			cout << "Must be at least RM20! \n";
-
-		}
+	while (true) {
 		cout << "Top Up Value (Must be at least RM20): RM";
+		cin >> input;
 
+		// Check if the entire input consists of digits
+		bool isNumeric = true;
+		for (char c : input) {
+			if (!isdigit(c)) {
+				isNumeric = false;
+				break;
+			}
+		}
+
+		if (isNumeric && (topUpValue = stod(input)) >= 20 && topUpValue <= 9999) {
+			break; // Valid input, exit the loop.
+		}
+
+		cout << "Invalid input. Please enter a numeric value between RM20 and RM9999." << endl;
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		greaterThan20Flag = false;
-
-		cin >> topUpValue;
-		if (cin && topUpValue >= 20) {
-			greaterThan20Flag = true;
-		}
 	}
 
 	return Customer(name, contactNo, topUpValue);
@@ -381,26 +378,22 @@ void updateValue(string cardNo, double newValue) {
 
 }
 
-void cardTopUp(string passedInCardNo)
-{
-	double balance = 0.0; //should be call out
-	string id;
-	bool validInput = false;
-	bool validID = false;
 
-
+void cardTopUp(string passedInCardNo) {
+	double balance = 0.0;
 	string cardNo;
-	if (passedInCardNo.length()>0) {
+	bool validInput = false;
+
+	if (passedInCardNo.length() > 0) {
 		cardNo = passedInCardNo;
 	}
 	else {
-		cout << "Please enter your card number to proceed: ";;
+		cout << "Please enter your card number to proceed: ";
 		cin >> cardNo;
 	}
-	
+
 	while (cardNo.length() != 9) {
-		cout << "Invalid format! ";
-		cout << "Please enter your card number again: ";;
+		cout << "Invalid format! Please enter your card number again: ";
 		cin >> cardNo;
 	}
 
@@ -411,142 +404,143 @@ void cardTopUp(string passedInCardNo)
 		ifstream fileInput;
 		fileInput.open("member.txt");
 		string line;
-		unsigned int curLine = 0;
+
 		while (getline(fileInput, line)) {
-			//cout << line.find("ABC000002") << endl;
-			//cout << cardNo << endl;
-			if (line.find(cardNo, 0) != string::npos) {
+			if (line.find(cardNo) != string::npos) {
 				deleteLine = line;
-				//	cout << "FOUND";
-				if(passedInCardNo.length() <= 0)cout << "\nMember found\n";
+				if (passedInCardNo.empty()) {
+					cout << "\nMember found\n";
+				}
 				flagToProceed = true;
-				//cout << "FOUNDDD";
 				break;
 			}
-			else {
-
-
-			}
-
-
-
 		}
-		if (flagToProceed) break;
-		cout << "NOT FOUND!\n";
-		cout << "Please enter your card number again: ";
+
 		fileInput.close();
-		// string cardNo;
-		cin >> cardNo;
-		while (cardNo.length() != 9) {
-			cout << "Invalid format! ";
-			cout << "Please enter your card number again: ";;
+
+		if (!flagToProceed) {
+			cout << "NOT FOUND!\n";
+			cout << "Please enter your card number again: ";
 			cin >> cardNo;
+			while (cardNo.length() != 9) {
+				cout << "Invalid format! Please enter your card number again: ";
+				cin >> cardNo;
+			}
 		}
 	}
+
 	balance = getCurrentTopUpValueFromFile(cardNo);
-	int topupamount;
+	int topupamount = 0;
 	string confirmation;
 	string conttopup;
 
-
-
 	do {
 	menu:
-		cout << "---------------------------------------" << endl;
-		cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
-		cout << "---------------------------------------" << endl;
-		cout << "\nPlease select top up amount:" << endl;
-		cout << " -------------------------------- " << endl;
-		cout << setw(10) << "> RM5 " << endl;
-		cout << setw(10) << "> RM10" << endl;
-		cout << setw(10) << "> RM30" << endl;
-		cout << setw(10) << "> RM50" << endl;
-		cout << " -------------------------------- " << endl;
-		cout << "Enter your amount: RM";
-		cin >> topupamount;
+		cout << "\n=======================================" << endl;
+		cout << "|          MTaco Topup System         |" << endl;
+		cout << "=======================================" << endl;
+		cout << "| Balance : RM" << setw(23) << fixed << setprecision(2) << showpoint << balance << " |" << endl;
+		cout << "=======================================" << endl;
+		cout << "|          Top Up Your Account        |" << endl;
+		cout << "=======================================" << endl;
+		cout << "| 1. RM5                              |" << endl;
+		cout << "| 2. RM10                             |" << endl;
+		cout << "| 3. RM30                             |" << endl;
+		cout << "| 4. RM50                             |" << endl;
+		cout << "=======================================" << endl;
 
-		if (topupamount == 5 || topupamount == 10 || topupamount == 30 || topupamount == 50) {
+		int choice = 0;
+		string input;
+		bool displayPrompt = true;
+
+		while (true) {
+			
+			getline(cin, input);
+
+			if (input.empty()) {
+				cout << "Please enter a valid choice (1-4): ";
+				displayPrompt = true;
+				continue;
+			}
+
+			stringstream ss(input);
+			if (ss >> choice && ss.eof() && choice >= 1 && choice <= 4) {
+				break;
+			}
+			else {
+				cout << "Invalid input! Please enter a valid choice (1-4): ";
+				displayPrompt = true;
+			}
+		}
+
+		switch (choice) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			topupamount = (choice == 1) ? 5 : ((choice == 2) ? 10 : ((choice == 3) ? 30 : 50));
 			cout << "\n\nNotice: RM0.50 will be deducted for service charges." << endl;
 			cout << "Confirm to top up RM" << topupamount << " into your membership card? \n\nYES(Y) or NO(N)  >> ";
 			cin >> confirmation;
-			bool validConfirmation = false;
-			while (!validConfirmation) {
+
+			while (true) {
 				if (confirmation == "Y" || confirmation == "y") {
 					system("CLS");
-
 					validInput = true;
-					validConfirmation = true;
+					cin.clear();
 					goto displayBalance;
 					break;
 				}
-
 				else if (confirmation == "N" || confirmation == "n") {
 					system("CLS");
-					validConfirmation = true;
+					cin.clear();
 					goto conttopup;
 					break;
 				}
-
 				else {
 					cout << "Invalid input!\n";
 					cout << "Confirm to top up RM" << topupamount << " into your membership card? \nYES(Y) or NO(N)  >> ";
 					cin >> confirmation;
 				}
 			}
-
-
-
-
-		}
-		else
-		{
+			break;
+		default:
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			system("CLS");
-			cout << "\nInvalid Amount! Please select amount from the list!\n\n\n";
+			cout << "\nInvalid Amount! Please select an amount from the list!\n\n\n";
 			validInput = false;
+			break;
 		}
 	} while (!validInput);
 
-
-
-
-
-	//	if (confirmation !="Y" && confirmation != "y") {
 conttopup:
 	cout << "Do you want to continue to top up? (Y/N) >> ";
 	cin >> conttopup;
 
 	if (conttopup == "N" || conttopup == "n") {
 		cout << "----------------------------------------------------------\n";
-		cout << setw(35)<<right << "TOP UP MODULE END"<<endl;
+		cout << setw(35) << right << "TOP UP MODULE END" << endl;
 		cout << "----------------------------------------------------------\n";
 		system("CLS");
 		return;
 	}
 	else if (conttopup == "Y" || conttopup == "y") {
 		system("CLS");
-
 		goto menu;
 	}
-	else  {
+	else {
 		cout << "Invalid Input!\n";
+		cin.clear();
 		goto conttopup;
 	}
-	//
-		//}
-	//	else {
 
 displayBalance:
-	balance += (double)topupamount - 0.5;
+	balance += topupamount - 0.50;
 	updateValue(cardNo, balance);
-	cout << "\nYou have successfully top up RM" << topupamount << " into your membership card (" << cardNo << ") !" << endl;
+	cout << "\nYou have successfully topped up RM" << topupamount << " into your membership card (" << cardNo << ") !" << endl;
 	cout << "---------------------------------------" << endl;
-	cout << "|Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
+	cout << "| Balance : RM" << setw(26) << left << fixed << setprecision(2) << showpoint << balance << "|" << endl;
 	cout << "---------------------------------------" << endl;
 	goto conttopup;
-	//}
-	//return balance;
-
-
 }

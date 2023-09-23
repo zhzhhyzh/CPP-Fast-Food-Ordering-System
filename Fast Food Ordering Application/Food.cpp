@@ -107,13 +107,13 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 	double total = displayOrders(foods, orders, orderChoice);
 
 	//cout << "TOTAL: " << total<<endl;
-	cout << "Please enter your card number to proceed: ";
+	cout << "Please enter your card number(ABCXXXXXX) to proceed: ";
 
 	string cardNo;
 	cin >> cardNo;
 	while (cardNo.length() != 9) {
 		cout << "Invalid format! ";
-		cout << "Please enter your card number again: ";;
+		cout << "Please enter your card number(ABCXXXXXX) again: ";;
 		cin >> cardNo;
 	}
 
@@ -135,88 +135,75 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 				flagToProceed = true;
 				break;
 			}
-			else {
-
-
-			}
 
 
 
 		}
 		if (flagToProceed) break;
 		cout << "NOT FOUND!\n";
-		cout << "Please enter your card number again: ";
+		cout << "Please enter your card number(ABCXXXXXX) again: ";
 		fileInput.close();
 		//string cardNo;
 		cin >> cardNo;
 	}
 
-
 	int selection;
+	
+	
 	int pointsNeeded = ceil(total * 100); // Points required for the purchase
 
-
-
-
 	bool goOnFlag = false;
+
 	while (!goOnFlag) {
 		cout << "\nEnter your selection" << endl;
 		cout << "1) Use sufficient balance to pay" << endl;
-		cout << "2) Use redeem point to pay" << endl;
+		cout << "2) Use redeem points to pay" << endl;
 		cin >> selection;
-		if (!cin || selection != 1 && selection != 2) {
+
+		if (!cin || (selection != 1 && selection != 2)) {
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			cout << "Invalid input. Please enter 1 or 2." << endl;
 		}
 		else {
 			if (selection == 1) {
-				currentValue = getCurrentTopUpValueFromFile(cardNo);
+				currentPoint = getCurrentTopUpValueFromFile(cardNo);
 				if (currentValue < total) {
 					cout << "Current Balance is: " << currentValue << endl;
 					cout << "Billing Total: " << total << endl;
 					cout << "Not enough balance!\n";
-
 					string wantTopUp;
 
 					cout << "Do you want to top up now? (Y/N): ";
 					cin >> wantTopUp;
 					while (wantTopUp != "Y" && wantTopUp != "y" && wantTopUp != "N" && wantTopUp != "n") {
-						cout << "Do you want to top up now? (Y/N): ";
-
+						cout << "Invalid input! Please enter Y or N: ";
+						cin >> wantTopUp;
 					}
 
 					if (wantTopUp == "Y" || wantTopUp == "y") {
+						system("CLS");
 						cout << "\nProceeding to top up page\n";
-
+						cin.clear();
 						cardTopUp(cardNo);
 					}
-
-					//	continue;
-
 				}
 				else {
 					goOnFlag = true;
-					break;
 				}
 			}
 			else if (selection == 2) {
 				currentPoint = getCurrentPointFromFile(cardNo);
-				if (currentPoint < pointsNeeded) {
-					cout << "Not enough points!\n";
-					//	continue;
-
-				}
-				else {
-					goOnFlag = true;
-
-					break;
-				}
+					if (currentPoint < pointsNeeded) {
+						cout << "Not enough points!\n";
+					}
+					else {
+						goOnFlag = true;
+					}
 			}
+		
 		}
 	}
-
-
 
 	// use value to purchase
 	if (selection == 1) {
@@ -270,19 +257,24 @@ void foodSelection() {
 	vector<int> orders;
 	bool flag = true;
 	bool isCheckout = true;
-
+	
 	int orderChoice, setAlaCarteChoice;
 	while (flag) {
-		cout << "ORDER FOOD\n\n";
+		while (true) {
+			cout << "===============================" << endl;
+			cout << "        ORDER FOOD" << endl;
+			cout << "===============================" << endl;
+			cout << "Previous Page (0)\nTake Away (1)\nDine In (2)\n";
+			cout << "\nPlease enter your choice: ";
 
-		cout << "Previous Page (0)\nTake Away (1)\nDine In (2)\n";
-		cout << "\nPlease enter: ";
-		cin >> orderChoice;
-		while (!cin || orderChoice < 0 || orderChoice>2) {
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "Invalid choice. Please enter again: ";
-			cin >> orderChoice;
+			if (!(cin >> orderChoice) || orderChoice < 0 || orderChoice > 2 || cin.peek() != '\n') {
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				cout << "\nInvalid choice. Please enter a valid option (0, 1, or 2)." << endl;
+			}
+			else {
+				break;  // Valid input, exit the loop
+			}
 		}
 
 		if (orderChoice == 0) {
@@ -302,14 +294,22 @@ void foodSelection() {
 				cout << "ORDER FOOD (DINE IN):\n\n";
 				break;
 			}
-			cout << "Return to previous page (0)\nSet (1) \nAla Carte (2) \nShow Orders (3) \nDelete An Order (4) \nProceed To Checkout (5) \n";
-		operationMenu:			cout << "\nPlease enter: ";
-			cin >> setAlaCarteChoice;
-			while (!cin || setAlaCarteChoice < 0 || setAlaCarteChoice>5) {
-				cin.clear();
-				cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				cout << "Invalid choice. Please enter again: ";
-				cin >> setAlaCarteChoice;
+			while (true) {
+				cout << "=======================================" << endl;
+				cout << "          Operation Menu" << endl;
+				cout << "=======================================" << endl;
+				cout << "Return to previous page (0)\nSet (1)\nAla Carte (2)\nShow Orders (3)\nDelete An Order (4)\nProceed To Checkout (5)\n";
+				operationMenu:
+				cout << "\nPlease enter your choice: ";
+
+				if (!(cin >> setAlaCarteChoice) || setAlaCarteChoice < 0 || setAlaCarteChoice > 5 || cin.peek() != '\n') {
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					cout << "\nInvalid choice. Please enter a valid option (0-5)." << endl;
+				}
+				else {
+					break;  // Valid input, exit the loop
+				}
 			}
 
 			if (setAlaCarteChoice == 1) {
