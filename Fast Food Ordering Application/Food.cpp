@@ -167,7 +167,7 @@ void payment(vector<Food>foods, vector<int>orders, int orderChoice) {
 		}
 		else {
 			if (selection == 1) {
-				currentPoint = getCurrentTopUpValueFromFile(cardNo);
+				currentValue = getCurrentTopUpValueFromFile(cardNo);
 				if (currentValue < total) {
 					cout << "Current Balance is: " << currentValue << endl;
 					cout << "Billing Total: " << total << endl;
