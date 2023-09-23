@@ -433,6 +433,7 @@ void cardTopUp(string passedInCardNo) {
 	int topupamount = 0;
 	string confirmation;
 	string conttopup;
+	bool validConfirmation = false;
 
 	do {
 	menu:
