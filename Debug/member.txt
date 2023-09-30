@@ -1,0 +1,7 @@
+                  Customer Name                          Card Number            Contact Number          Membership Point               Value          
+                       Yeye                               ABC000003               0192228989                    0                    20.000000        
+                    Yeoh ZZHe                             ABC000004               0182228383                    0                 2000000.000000      
+                   Yeoh Zhehe                             ABC000005               0192828888                    0                  10092.000000       
+                       Dess                               ABC000006               01922828888                   0                    20.000000        
+                      Yeoh                                ABC000001               0192229292                    0                  10081.500000       
+                      yerus                               ABC000002               0123456789                    0                   132.500000        
